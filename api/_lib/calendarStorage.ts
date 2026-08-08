@@ -1,7 +1,6 @@
 import { get, put } from "@vercel/blob";
-import type { CalendarEvent, EventInput, EventStatus } from "../../src/types/calendar";
-import { CURRENT_DATE, DAYS_PER_MONTH, MIN_YEAR, MONTHS_PER_YEAR } from "../../src/data/calendarConfig";
-import { isDateAvailable } from "../../src/utils/dateComparison";
+import type { CalendarEvent, EventInput, EventStatus } from "../../src/types/calendar.js";
+import { CURRENT_DATE, DAYS_PER_MONTH, getCreationLimitDate, MIN_YEAR, MONTHS_PER_YEAR } from "../../src/data/calendarConfig.js";
 
 export interface StoredCalendar {
   ownerId: string;
@@ -9,6 +8,15 @@ export interface StoredCalendar {
 }
 
 const VALID_STATUSES: EventStatus[] = ["ongoing", "completed", "paused"];
+
+function toAbsoluteDay(year: number, month: number, day: number) {
+  return (year - 1) * MONTHS_PER_YEAR * DAYS_PER_MONTH + (month - 1) * DAYS_PER_MONTH + day;
+}
+
+function isAvailableForRegistration(year: number, month: number, day: number) {
+  const limit = getCreationLimitDate();
+  return toAbsoluteDay(year, month, day) <= toAbsoluteDay(limit.year, limit.month, limit.day);
+}
 
 function getCalendarPath(ownerId: string) {
   return `calendars/${ownerId}.json`;
@@ -40,7 +48,7 @@ function validateEventInput(input: Partial<EventInput>): EventInput {
     throw new ValidationError("Dia deve estar entre 1 e 28.");
   }
 
-  if (!isDateAvailable({ year, month, day })) {
+  if (!isAvailableForRegistration(year, month, day)) {
     throw new ValidationError("Esta data ainda não está disponível para registros.");
   }
 

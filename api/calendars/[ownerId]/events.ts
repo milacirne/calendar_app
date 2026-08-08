@@ -1,5 +1,5 @@
 import type { EventInput } from "../../../src/types/calendar";
-import { createEvent, getCalendar, NotFoundError, ValidationError } from "../../_lib/calendarStorage";
+import { createEvent, getCalendar, NotFoundError, ValidationError } from "../../_lib/calendarStorage.js";
 
 function getParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
