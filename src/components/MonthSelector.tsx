@@ -22,9 +22,12 @@ export function MonthSelector({ selectedDate, events, onDateChange }: MonthSelec
     : "Próximo mês";
 
   const moveMonth = (direction: "previous" | "next") => {
-    const nextMonth =
-      direction === "previous" ? getPreviousMonth(selectedDate) : getNextMonth(selectedDate);
-    onDateChange({ ...selectedDate, ...nextMonth, day: 1 });
+    const nextMonth = direction === "previous" ? getPreviousMonth(selectedDate) : getNextMonth(selectedDate);
+    onDateChange({
+      year: nextMonth.year,
+      month: nextMonth.month,
+      day: 1,
+    });
   };
 
   return (
