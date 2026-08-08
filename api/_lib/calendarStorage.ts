@@ -112,7 +112,7 @@ export async function getCalendar(ownerId: string): Promise<StoredCalendar> {
   assertOwnerId(ownerId);
 
   const pathname = getCalendarPath(ownerId);
-  const result = await get(pathname, { access: "private" });
+  const result = await get(pathname, { access: "private", useCache: false });
 
   if (!result?.stream) {
     return { ownerId, events: [] };
