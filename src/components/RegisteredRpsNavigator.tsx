@@ -9,6 +9,11 @@ interface RegisteredRpsNavigatorProps {
   onNavigate: (date: PrythianDate) => void;
 }
 
+function formatMonthShortcut(monthId: number, monthName: string) {
+  const shortName = monthName.replace(/^Mês (da|do|das|dos|de) /, "");
+  return `Mês ${String(monthId).padStart(2, "0")} - ${shortName}`;
+}
+
 export function RegisteredRpsNavigator({ events, onNavigate }: RegisteredRpsNavigatorProps) {
   const [selectedEventYear, setSelectedEventYear] = useState<number | null>(null);
   const personalEvents = useMemo(() => events.filter((event) => event.type === "personal"), [events]);
@@ -51,7 +56,7 @@ export function RegisteredRpsNavigator({ events, onNavigate }: RegisteredRpsNavi
                   key={month.id}
                   onClick={() => onNavigate({ year: selectedEventYear, month: month.id, day: 1 })}
                 >
-                  {month.name}
+                  {formatMonthShortcut(month.id, month.name)}
                   <span>{monthWithEvents.eventCount}</span>
                 </button>
               );
