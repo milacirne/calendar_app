@@ -7,6 +7,14 @@ function normalizeParam(value: string | null) {
   return normalized || null;
 }
 
+function getLocalFallbackIdentity() {
+  return {
+    ownerId: "local-owner",
+    viewerId: "local-owner",
+    characterName: "Personagem local",
+  };
+}
+
 export function isValidForumId(value: string | null): value is string {
   return Boolean(value && FORUM_ID_PATTERN.test(value));
 }
@@ -31,13 +39,13 @@ export function getForumIdentity(search = window.location.search): ForumIdentity
   const viewerId = getForumViewerId(search);
   const characterName = getForumCharacterName(search);
 
-  if (!isValidForumId(ownerId) || !isValidForumId(viewerId) || !characterName) {
-    return null;
+  if (ownerId && viewerId && characterName) {
+    return {
+      ownerId,
+      viewerId,
+      characterName,
+    };
   }
 
-  return {
-    ownerId,
-    viewerId,
-    characterName,
-  };
+  return getLocalFallbackIdentity();
 }

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { DAYS_PER_MONTH, MAX_YEAR, MIN_YEAR } from "../data/calendarConfig";
+import { months } from "../data/months";
 import type { CalendarEvent, EventInput, EventStatus, PrythianDate } from "../types/calendar";
 import { eventStatusOptions } from "../utils/eventStatus";
 
@@ -10,20 +12,27 @@ interface EventFormProps {
 }
 
 export function EventForm({ date, event, onSubmit, onCancel }: EventFormProps) {
+  const [year, setYear] = useState(date.year);
+  const [month, setMonth] = useState(date.month);
+  const [day, setDay] = useState(date.day);
   const [title, setTitle] = useState("");
   const [rpUrl, setRpUrl] = useState("");
   const [participants, setParticipants] = useState("");
   const [status, setStatus] = useState<EventStatus>("ongoing");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const isEditing = Boolean(event);
 
   useEffect(() => {
+    setYear(event?.year ?? date.year);
+    setMonth(event?.month ?? date.month);
+    setDay(event?.day ?? date.day);
     setTitle(event?.title ?? "");
     setRpUrl(event?.rpUrl ?? "");
     setParticipants(event?.participants.map((participant) => participant.name).join("\n") ?? "");
     setStatus(event?.status ?? "ongoing");
     setNotes(event?.notes ?? "");
-  }, [event]);
+  }, [date.day, date.month, date.year, event]);
 
   const participantList = useMemo(
     () =>
@@ -39,20 +48,64 @@ export function EventForm({ date, event, onSubmit, onCancel }: EventFormProps) {
     submitEvent.preventDefault();
     setIsSaving(true);
 
-    await onSubmit({
-      ...date,
-      title,
-      rpUrl,
-      participants: participantList,
-      status,
-      notes: notes.trim() ? notes : undefined,
-    });
-
-    setIsSaving(false);
+    try {
+      await onSubmit({
+        year,
+        month,
+        day,
+        title,
+        rpUrl,
+        participants: participantList,
+        status,
+        notes: notes.trim() ? notes : undefined,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <form className="event-form" onSubmit={handleSubmit}>
+      {isEditing && (
+        <fieldset className="event-date-fields">
+          <legend>Data da RP</legend>
+          <label className="field">
+            <span>Ano</span>
+            <input
+              type="number"
+              min={MIN_YEAR}
+              max={MAX_YEAR}
+              value={year}
+              onChange={(event) => setYear(Number(event.target.value))}
+              required
+            />
+          </label>
+
+          <label className="field">
+            <span>Mês</span>
+            <select value={month} onChange={(event) => setMonth(Number(event.target.value))}>
+              {months.map((monthOption) => (
+                <option key={monthOption.id} value={monthOption.id}>
+                  {String(monthOption.id).padStart(2, "0")} - {monthOption.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="field">
+            <span>Dia</span>
+            <input
+              type="number"
+              min={1}
+              max={DAYS_PER_MONTH}
+              value={day}
+              onChange={(event) => setDay(Number(event.target.value))}
+              required
+            />
+          </label>
+        </fieldset>
+      )}
+
       <label className="field">
         <span>Título</span>
         <input value={title} onChange={(event) => setTitle(event.target.value)} required />
@@ -89,7 +142,7 @@ export function EventForm({ date, event, onSubmit, onCancel }: EventFormProps) {
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
-          placeholder="Ex.: Noite • RP fechada com Rhysand • Após o Calanmai."
+          placeholder="Ex.: Noite - RP fechada com Rhysand - Após o Calanmai."
         />
       </label>
 

@@ -786,6 +786,23 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.event-date-fields {
+  display: grid;
+  grid-template-columns: 0.75fr 1.5fr 0.75fr;
+  gap: 10px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.event-date-fields legend {
+  padding: 0 6px;
+  color: var(--lavender);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
 .form-actions {
   display: flex;
   justify-content: end;
@@ -857,6 +874,10 @@ a {
   }
 
   .event-item {
+    grid-template-columns: 1fr;
+  }
+
+  .event-date-fields {
     grid-template-columns: 1fr;
   }
 

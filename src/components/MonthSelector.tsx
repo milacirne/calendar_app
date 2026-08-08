@@ -62,17 +62,21 @@ export function MonthSelector({ selectedDate, events, onDateChange }: MonthSelec
           value={selectedDate.month}
           onChange={(event) => onDateChange({ ...selectedDate, month: Number(event.target.value), day: 1 })}
         >
-          {seasons.map((season) => (
-            <optgroup key={season} label={season}>
-              {months
-                .filter((month) => month.season === season)
-                .map((month) => (
+          {seasons.map((season) => {
+            const filteredMonths = months
+              .filter((month) => month.season === season)
+              .filter((month) => !(selectedDate.year === CURRENT_DATE.year && month.id > CURRENT_DATE.month));
+
+            return filteredMonths.length > 0 ? (
+              <optgroup key={season} label={season}>
+                {filteredMonths.map((month) => (
                   <option key={month.id} value={month.id}>
                     {month.id}. {month.name}
                   </option>
                 ))}
-            </optgroup>
-          ))}
+              </optgroup>
+            ) : null;
+          })}
         </select>
       </label>
 
