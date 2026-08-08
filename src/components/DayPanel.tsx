@@ -1,5 +1,5 @@
 import { Edit3, ExternalLink, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CalendarEvent, EventInput, Permission, PrythianDate } from "../types/calendar";
 import { formatPrythianDate, getLunarWeek, getWeekday } from "../utils/calendar";
 import { isDateAvailable } from "../utils/dateComparison";
@@ -36,6 +36,10 @@ export function DayPanel({
     setIsCreating(false);
     setEditingEvent(null);
   };
+
+  useEffect(() => {
+    closeForm();
+  }, [date.year, date.month, date.day]);
 
   return (
     <aside className="day-panel">
