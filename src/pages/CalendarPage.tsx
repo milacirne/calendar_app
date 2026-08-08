@@ -90,9 +90,10 @@ export function CalendarPage() {
     <main className={`calendar-page ${seasonClass}`}>
       <header className="calendar-hero">
         <div>
-          <span className="eyebrow">Linha do tempo de {characterName}</span>
-          <h1>Calendário</h1>
-          <p>
+          <span className="eyebrow">Linha do tempo</span>
+          <h1>{characterName}</h1>
+          <p className="hero-calendar-label">Calendário</p>
+          <p className="hero-period-line">
             {selectedMonth.name} - {selectedDate.year} d.T. - {selectedMonth.season}
           </p>
         </div>
