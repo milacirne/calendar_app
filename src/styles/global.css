@@ -521,6 +521,14 @@ a {
   font-size: 1.6rem;
 }
 
+.day-cell-date-mark {
+  display: contents;
+}
+
+.day-cell-mobile-weekday {
+  display: none;
+}
+
 .event-marker,
 .locked-marker {
   font-size: 0.78rem;
@@ -775,19 +783,35 @@ a {
   }
 
   .calendar-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   .day-cell {
-    min-height: 116px;
+    min-height: 128px;
+    padding: 14px;
   }
 
   .day-cell-topline {
-    justify-content: start;
+    justify-content: space-between;
   }
 
   .day-cell-topline strong {
-    min-width: 42px;
+    min-width: auto;
+  }
+
+  .day-cell-date-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-cell-mobile-weekday {
+    display: inline;
+    color: var(--lavender);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .event-item {

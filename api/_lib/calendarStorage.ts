@@ -1,6 +1,6 @@
 import { get, put } from "@vercel/blob";
 import type { CalendarEvent, EventInput, EventStatus } from "../../src/types/calendar";
-import { CURRENT_DATE, DAYS_PER_MONTH, MAX_YEAR, MIN_YEAR, MONTHS_PER_YEAR } from "../../src/data/calendarConfig";
+import { CURRENT_DATE, DAYS_PER_MONTH, MIN_YEAR, MONTHS_PER_YEAR } from "../../src/data/calendarConfig";
 import { isDateAvailable } from "../../src/utils/dateComparison";
 
 export interface StoredCalendar {
@@ -24,20 +24,23 @@ function validateEventInput(input: Partial<EventInput>): EventInput {
   const title = typeof input.title === "string" ? input.title.trim() : "";
   const rpUrl = typeof input.rpUrl === "string" ? input.rpUrl.trim() : "";
   const notes = typeof input.notes === "string" && input.notes.trim() ? input.notes.trim() : undefined;
+  const year = input.year;
+  const month = input.month;
+  const day = input.day;
 
-  if (!Number.isInteger(input.year) || input.year < MIN_YEAR || input.year > CURRENT_DATE.year) {
+  if (typeof year !== "number" || !Number.isInteger(year) || year < MIN_YEAR || year > CURRENT_DATE.year) {
     throw new ValidationError(`Ano deve estar entre ${MIN_YEAR} e ${CURRENT_DATE.year}.`);
   }
 
-  if (!Number.isInteger(input.month) || input.month < 1 || input.month > MONTHS_PER_YEAR) {
+  if (typeof month !== "number" || !Number.isInteger(month) || month < 1 || month > MONTHS_PER_YEAR) {
     throw new ValidationError("Mês deve estar entre 1 e 12.");
   }
 
-  if (!Number.isInteger(input.day) || input.day < 1 || input.day > DAYS_PER_MONTH) {
+  if (typeof day !== "number" || !Number.isInteger(day) || day < 1 || day > DAYS_PER_MONTH) {
     throw new ValidationError("Dia deve estar entre 1 e 28.");
   }
 
-  if (!isDateAvailable({ year: input.year, month: input.month, day: input.day })) {
+  if (!isDateAvailable({ year, month, day })) {
     throw new ValidationError("Esta data ainda não está disponível para registros.");
   }
 
@@ -78,9 +81,9 @@ function validateEventInput(input: Partial<EventInput>): EventInput {
   });
 
   return {
-    year: input.year,
-    month: input.month,
-    day: input.day,
+    year,
+    month,
+    day,
     title,
     rpUrl,
     participants,
@@ -103,7 +106,7 @@ export async function getCalendar(ownerId: string): Promise<StoredCalendar> {
   const pathname = getCalendarPath(ownerId);
   const result = await get(pathname, { access: "private" });
 
-  if (result?.statusCode !== 200 || !result.stream) {
+  if (!result?.stream) {
     return { ownerId, events: [] };
   }
 

@@ -1,6 +1,6 @@
 import { weekdays } from "../data/weekdays";
 import type { CalendarEvent, PrythianDate } from "../types/calendar";
-import { getLunarWeek, getMonthDays } from "../utils/calendar";
+import { getLunarWeek, getMonthDays, getWeekday } from "../utils/calendar";
 import { isDateAvailable, isSameDate } from "../utils/dateComparison";
 
 interface CalendarGridProps {
@@ -32,6 +32,7 @@ export function CalendarGrid({ year, month, selectedDate, events, onSelectDate }
       <div className="calendar-grid">
         {days.map((date) => {
           const lunarWeek = getLunarWeek(date.day);
+          const weekday = getWeekday(date.day);
           const dayEvents = events.filter((event) => isSameDate(event, date));
           const personalCount = dayEvents.filter((event) => event.type === "personal").length;
           const officialCount = dayEvents.filter((event) => event.type === "official").length;
@@ -55,8 +56,11 @@ export function CalendarGrid({ year, month, selectedDate, events, onSelectDate }
               onClick={() => onSelectDate(date)}
             >
               <span className="day-cell-topline">
-                <strong>{date.day}</strong>
-                <span className={`moon-icon moon-phase-${lunarWeek.id}`} aria-hidden="true" />
+                <span className="day-cell-date-mark">
+                  <strong>{date.day}</strong>
+                  <span className={`moon-icon moon-phase-${lunarWeek.id}`} aria-hidden="true" />
+                </span>
+                <span className="day-cell-mobile-weekday">{weekday.name}</span>
               </span>
               {(personalCount > 0 || officialCount > 0) && (
                 <span className="event-markers">
