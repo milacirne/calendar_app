@@ -10,7 +10,7 @@ export const initialOfficialEvents: CalendarEvent[] = [
     title: "O Solstício Das Promessas Amargas",
     rpUrl: "https://acowas.jcink.net/index.php?showtopic=58&view=findpost&p=208",
     participants: [],
-    status: "ongoing",
+    status: "completed",
     type: "official",
     notes: "Oficial. Passa-se à noite, no Palácio de Gelo, na Corte Invernal.",
   },
