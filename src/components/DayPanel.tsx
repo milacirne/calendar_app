@@ -68,7 +68,9 @@ export function DayPanel({
                 {event.type === "official" ? "RP oficial" : "RP registrada"}
               </span>
               <h4>{event.title}</h4>
-              <p>{event.participants.map((participant) => participant.name).join(" x ")}</p>
+              {event.participants.length > 0 && (
+                <p>{event.participants.map((participant) => participant.name).join(" x ")}</p>
+              )}
               <span className="event-status">{eventStatusLabels[event.status]}</span>
               {event.notes && (
                 <div className="event-notes">

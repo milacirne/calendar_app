@@ -16,11 +16,10 @@ function formatMonthShortcut(monthId: number, monthName: string) {
 
 export function RegisteredRpsNavigator({ events, onNavigate }: RegisteredRpsNavigatorProps) {
   const [selectedEventYear, setSelectedEventYear] = useState<number | null>(null);
-  const personalEvents = useMemo(() => events.filter((event) => event.type === "personal"), [events]);
-  const yearsWithEvents = useMemo(() => getYearsWithEvents(personalEvents), [personalEvents]);
+  const yearsWithEvents = useMemo(() => getYearsWithEvents(events), [events]);
   const monthsWithEvents = useMemo(
-    () => (selectedEventYear ? getMonthsWithEvents(personalEvents, selectedEventYear) : []),
-    [personalEvents, selectedEventYear],
+    () => (selectedEventYear ? getMonthsWithEvents(events, selectedEventYear) : []),
+    [events, selectedEventYear],
   );
 
   if (yearsWithEvents.length === 0) {

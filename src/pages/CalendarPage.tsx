@@ -55,7 +55,12 @@ export function CalendarPage() {
       throw new Error("Edição não permitida para esta data ou usuário.");
     }
 
-    await editEvent(eventId, input);
+    const updatedEvent = await editEvent(eventId, input);
+    setSelectedDate({
+      year: updatedEvent.year,
+      month: updatedEvent.month,
+      day: updatedEvent.day,
+    });
   };
 
   const guardedDelete = async (eventId: string) => {

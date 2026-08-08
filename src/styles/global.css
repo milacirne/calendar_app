@@ -162,9 +162,9 @@ a {
   margin: 8px 0;
   max-width: 820px;
   color: var(--lavender);
-  font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.8rem, 7vw, 5.8rem);
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
   line-height: 0.98;
 }
 
