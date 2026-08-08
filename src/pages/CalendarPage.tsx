@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarGrid } from "../components/CalendarGrid";
 import { DayPanel } from "../components/DayPanel";
 import { MonthSelector } from "../components/MonthSelector";
@@ -22,13 +22,13 @@ export function CalendarPage() {
     removeEvent,
     isLoading: areEventsLoading,
     error: eventsError,
-  } =
-    useCalendarEvents(context?.owner.id, context?.viewerId);
+  } = useCalendarEvents(context?.owner.id, context?.viewerId);
 
   const selectedMonth = getMonth(selectedDate.month);
   const currentMonth = getMonth(CURRENT_DATE.month);
   const selectedEvents = useMemo(() => getEventsForDate(selectedDate), [getEventsForDate, selectedDate]);
   const isBusy = isContextLoading || areEventsLoading;
+  const characterName = context?.owner.characterName ?? null;
   const seasonClass =
     selectedDate.month <= 3
       ? "season-spring"
@@ -37,6 +37,10 @@ export function CalendarPage() {
         : selectedDate.month <= 9
           ? "season-autumn"
           : "season-winter";
+
+  useEffect(() => {
+    document.title = characterName ? `Calendário de ${characterName}` : "Calendário de Prythian";
+  }, [characterName]);
 
   const guardedCreate = async (input: EventInput) => {
     if (!context || !canEditCalendar(context.permission) || !isDateAvailable(input)) {
@@ -62,7 +66,23 @@ export function CalendarPage() {
     await removeEvent(eventId);
   };
 
-  if (isBusy || !context) {
+  if (isContextLoading) {
+    return <main className="loading-screen">Abrindo o calendário...</main>;
+  }
+
+  if (!context) {
+    return (
+      <main className="invalid-context-screen">
+        <section>
+          <span className="eyebrow">Calendário</span>
+          <h1>Este calendário deve ser acessado através do perfil do personagem no fórum.</h1>
+          <p>Acesse o perfil do personagem e utilize o botão Calendário.</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (isBusy) {
     return <main className="loading-screen">Abrindo o calendário...</main>;
   }
 
@@ -70,7 +90,7 @@ export function CalendarPage() {
     <main className={`calendar-page ${seasonClass}`}>
       <header className="calendar-hero">
         <div>
-          <span className="eyebrow">Linha do tempo de personagem</span>
+          <span className="eyebrow">Linha do tempo de {characterName}</span>
           <h1>Calendário</h1>
           <p>
             {selectedMonth.name} - {selectedDate.year} d.T. - {selectedMonth.season}

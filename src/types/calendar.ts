@@ -62,6 +62,12 @@ export interface AuthUser {
   displayName: string;
 }
 
+export interface ForumIdentity {
+  ownerId: string;
+  viewerId: string;
+  characterName: string;
+}
+
 export interface CalendarContextState {
   authenticatedUser: AuthUser | null;
   owner: CalendarOwner;
