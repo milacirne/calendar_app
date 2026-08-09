@@ -339,6 +339,40 @@ a {
   font-size: 0.9rem;
 }
 
+.rp-status-groups {
+  display: grid;
+  gap: 14px;
+}
+
+.rp-status-section {
+  display: grid;
+  gap: 8px;
+}
+
+.rp-status-section + .rp-status-section {
+  padding-top: 12px;
+  border-top: 1px solid rgba(244, 239, 228, 0.08);
+}
+
+.rp-status-section h4 {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.rp-status-title.ongoing {
+  color: #e6c66f;
+}
+
+.rp-status-title.completed {
+  color: #8fd49d;
+}
+
+.rp-status-title.paused {
+  color: #e89a9a;
+}
+
 .rp-chip-list {
   display: flex;
   flex-wrap: wrap;

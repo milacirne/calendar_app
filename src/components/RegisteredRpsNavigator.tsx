@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { CalendarEvent, PrythianDate } from "../types/calendar";
+import type { CalendarEvent, EventStatus, PrythianDate } from "../types/calendar";
 import { getMonth } from "../utils/calendar";
 import { getMonthsWithEvents, getYearsWithEvents } from "../utils/eventIndex";
 
@@ -9,6 +9,12 @@ interface RegisteredRpsNavigatorProps {
   onNavigate: (date: PrythianDate) => void;
 }
 
+const statusSections: Array<{ status: EventStatus; title: string }> = [
+  { status: "ongoing", title: "RPs em andamento" },
+  { status: "completed", title: "RPs concluídas" },
+  { status: "paused", title: "RPs pausadas" },
+];
+
 function formatMonthShortcut(monthId: number, monthName: string) {
   const shortName = monthName.replace(/^Mês (da|do|das|dos|de) /, "");
   return `Mês ${String(monthId).padStart(2, "0")} - ${shortName}`;
@@ -16,13 +22,28 @@ function formatMonthShortcut(monthId: number, monthName: string) {
 
 export function RegisteredRpsNavigator({ events, onNavigate }: RegisteredRpsNavigatorProps) {
   const [selectedEventYear, setSelectedEventYear] = useState<number | null>(null);
-  const yearsWithEvents = useMemo(() => getYearsWithEvents(events), [events]);
-  const monthsWithEvents = useMemo(
-    () => (selectedEventYear ? getMonthsWithEvents(events, selectedEventYear) : []),
-    [events, selectedEventYear],
+  const [selectedStatus, setSelectedStatus] = useState<EventStatus | null>(null);
+  const hasEvents = events.length > 0;
+  const eventsByStatus = useMemo(
+    () =>
+      statusSections.map((section) => ({
+        ...section,
+        events: events.filter((event) => event.status === section.status),
+      })),
+    [events],
   );
+  const nonEmptySections = eventsByStatus.filter((section) => section.events.length > 0);
+  const visibleSections =
+    selectedEventYear && selectedStatus
+      ? nonEmptySections.filter((section) => section.status === selectedStatus)
+      : nonEmptySections;
 
-  if (yearsWithEvents.length === 0) {
+  const resetSelection = () => {
+    setSelectedEventYear(null);
+    setSelectedStatus(null);
+  };
+
+  if (!hasEvents) {
     return (
       <section className="registered-rps" aria-label="RPs registradas">
         <h3>RPs registradas</h3>
@@ -36,41 +57,53 @@ export function RegisteredRpsNavigator({ events, onNavigate }: RegisteredRpsNavi
       <div className="registered-rps-heading">
         <h3>{selectedEventYear ? `RPs registradas em ${selectedEventYear} d.T.` : "RPs registradas"}</h3>
         {selectedEventYear && (
-          <button className="link-button" type="button" onClick={() => setSelectedEventYear(null)}>
+          <button className="link-button" type="button" onClick={resetSelection}>
             <ArrowLeft size={15} />
             Ver anos com RPs
           </button>
         )}
       </div>
 
-      <div className="rp-chip-list">
-        {selectedEventYear
-          ? monthsWithEvents.map((monthWithEvents) => {
-              const month = getMonth(monthWithEvents.month);
+      <div className="rp-status-groups">
+        {visibleSections.map((section) => {
+          const chips = selectedEventYear
+            ? getMonthsWithEvents(section.events, selectedEventYear).map((monthWithEvents) => {
+                const month = getMonth(monthWithEvents.month);
 
-              return (
+                return (
+                  <button
+                    className="rp-chip"
+                    type="button"
+                    key={month.id}
+                    onClick={() => onNavigate({ year: selectedEventYear, month: month.id, day: 1 })}
+                  >
+                    {formatMonthShortcut(month.id, month.name)}
+                    <span>{monthWithEvents.eventCount}</span>
+                  </button>
+                );
+              })
+            : getYearsWithEvents(section.events).map((yearWithEvents) => (
                 <button
                   className="rp-chip"
                   type="button"
-                  key={month.id}
-                  onClick={() => onNavigate({ year: selectedEventYear, month: month.id, day: 1 })}
+                  key={yearWithEvents.year}
+                  onClick={() => {
+                    setSelectedEventYear(yearWithEvents.year);
+                    setSelectedStatus(section.status);
+                  }}
                 >
-                  {formatMonthShortcut(month.id, month.name)}
-                  <span>{monthWithEvents.eventCount}</span>
+                  {yearWithEvents.year} d.T.
+                  <span>{yearWithEvents.eventCount}</span>
                 </button>
-              );
-            })
-          : yearsWithEvents.map((yearWithEvents) => (
-              <button
-                className="rp-chip"
-                type="button"
-                key={yearWithEvents.year}
-                onClick={() => setSelectedEventYear(yearWithEvents.year)}
-              >
-                {yearWithEvents.year} d.T.
-                <span>{yearWithEvents.eventCount}</span>
-              </button>
-            ))}
+              ));
+
+          return (
+            <section className="rp-status-section" key={section.status}>
+              <h4 className={`rp-status-title ${section.status}`}>{section.title}</h4>
+              <div className="rp-chip-list">{chips}</div>
+            </section>
+          );
+        })}
       </div>
     </section>
   );
