@@ -10,9 +10,9 @@ interface RegisteredRpsNavigatorProps {
 }
 
 const statusSections: Array<{ status: EventStatus; title: string }> = [
-  { status: "ongoing", title: "RPs em andamento" },
-  { status: "completed", title: "RPs concluídas" },
-  { status: "paused", title: "RPs pausadas" },
+  { status: "ongoing", title: "Em andamento" },
+  { status: "completed", title: "Concluídas" },
+  { status: "paused", title: "Pausadas" },
 ];
 
 function formatMonthShortcut(monthId: number, monthName: string) {
